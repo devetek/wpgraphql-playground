@@ -1,0 +1,41 @@
+# local volume for DB, some stuff no need to pushed
+backup/mysql/volume
+pgwp-deprecated
+wp-backup-okcar
+vendor
+
+# wp debug
+debug.log
+
+# local env
+.env
+
+# db store
+.DS_Store
+mysql/volume
+pgql/volume
+
+# content
+wp-content/cache/**
+
+# default compose
+docker-compose.yml
+
+# pg4wp log
+wp-content/pg4wp/logs/pg4wp_errors.log
+
+# default WP engine
+wp-content/updraft/**
+wp-content/upgrade/**
+wp-content/languages/**
+wp-content/w3tc-config/**
+wp-content/aiowps_backups/**
+wp-content/plugins/akismet/**
+wp-content/plugins/hello.php
+wp-content/themes/twentytwenty/**
+wp-content/themes/twentyfifteen/**
+wp-content/themes/twentyfourteen/**
+wp-content/themes/twentytwentyone/**
+wp-content/themes/twentytwentytwo/**
+wp-content/themes/directory-starter/**
+wp-content/themes/twentysixteen/**

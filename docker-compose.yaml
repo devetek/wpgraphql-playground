@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    env_file: .env
+
+  mysql:
+    image: mysql:8.2.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_init:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+    env_file: .env
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
+
+  # pgql:
+  #   image: postgres:alpine
+  #   restart: always
+  #   volumes:
+  #     - db_script:/docker-entrypoint-initdb.d
+  #     - db_data:/var/lib/postgresql/data
+  #   ports:
+  #     - 5432:5432
+  #   env_file: .env
+  
+  app:
+    image: prakasa1904/wp-environment:dev
+    restart: always
+    volumes:
+      - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - ./.env:/var/www/html/.env
+      - ./wp-config.php:/var/www/html/wp-config.php
+      - ./wp-content:/var/www/html/wp-content
+    env_file: .env
+
+  nginx:
+    image: nginx
+    depends_on:
+      - app
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    restart: always
+    ports:
+      - 80:80
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+volumes:
+  mysql_init:
+      driver: local
+      driver_opts:
+        type: none
+        device: $PWD/mysql/scripts
+        o: bind
+  mysql_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/mysql/volume
+      o: bind
+  # uncomment this when you want to test wordpress with postgreslq and caddy as reverse proxy
+  # repo for wppgql can be found here https://github.com/devetek/wppgql
+  # db_script:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     device: $PWD/pgql/scripts
+  #     o: bind
+  # db_data:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     device: $PWD/pgql/volume
+  #     o: bind
+  # caddy_certs:
